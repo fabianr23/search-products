@@ -1,6 +1,6 @@
 import React from "react";
 import "../sass/search.scss";
-import axios from "axios";
+import getSearchEndpoint from "./search-endpoint";
 
 class Search extends React.Component {
   constructor(props) {
@@ -8,44 +8,24 @@ class Search extends React.Component {
 
     this.state = {
       query: "",
-      results: {},
+      results: [],
       message: "",
     };
-
-    this.cancel = "";
   }
 
-  fetchSearchQuery = (query) => {
-    const searchAPIURl = `https://api.mercadolibre.com/sites/MLA/search?q=${query}`;
+  fetchSearchQuery = async (query) => {
+    if (query.length >= 3) {
+      const { response, message } = await getSearchEndpoint(query);
 
-    if (this.cancel) {
-      this.cancel.cancel();
-    }
-
-    this.cancel = axios.CancelToken.source();
-
-    axios
-      .get(searchAPIURl, {
-        cancelToken: this.cancel.token,
-      })
-      .then((response) => {
-        console.dir(response.data);
-        const msgResult =
-          response?.data?.results?.length > 0
-            ? ""
-            : "No results found, try with another search please.";
-        this.setState({
-          results: response.data.results,
-          message: msgResult,
-        });
-      })
-      .catch((error) => {
-        if (axios.isCancel(error) || error) {
-          this.setState({
-            message: "Failed to fetch the data, Please check network",
-          });
-        }
+      this.setState({
+        results: response,
+        message: message,
       });
+    } else {
+      this.setState({
+        results: [],
+      });
+    }
   };
 
   searchInputChange = async (event) => {
