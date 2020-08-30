@@ -78,15 +78,17 @@ class Search extends React.Component {
   render() {
     const { query } = this.state;
     return (
-      <div className="container">
-        <h2 className="header">Search</h2>
-        <label className="search-label" htmlFor="search-input">
+      <div className="container-search">
+        <label
+          className="container-search__search-label"
+          htmlFor="search-input"
+        >
           <input
             type="text"
             name="query"
             value={query}
             id="search-input"
-            placeholder="Search..."
+            placeholder="Nunca dejes de buscar"
             onChange={this.searchInputChange}
           />
         </label>
