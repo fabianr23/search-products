@@ -1,7 +1,9 @@
 import React from "react";
 import "../sass/search.scss";
 import getSearchEndpoint from "./search-endpoint";
-
+import ListProducts from "./list-products";
+import SearchChild from "./search-bar";
+import logoML from "../assets/png/logo-ML.png";
 class Search extends React.Component {
   constructor(props) {
     super(props);
@@ -13,12 +15,17 @@ class Search extends React.Component {
     };
   }
 
-  fetchSearchQuery = async (query) => {
+  componentDidMount() {
+    this.setListenerSearch();
+  }
+
+  fetchSearchQuery = async () => {
+    let query = this.state.query;
+
     if (query.length >= 3) {
       const { response, message } = await getSearchEndpoint(query);
-
+      await this.setProducts(response);
       this.setState({
-        results: response,
         message: message,
       });
     } else {
@@ -32,47 +39,58 @@ class Search extends React.Component {
     const query = event.target.value;
     if (query) {
       await this.setState({ query: query, message: "" });
-      await this.fetchSearchQuery(query);
     } else {
-      this.setState({ query, results: {}, message: "" });
+      this.setState({ query, results: [], message: "" });
     }
   };
 
-  showResults = () => {
-    const { results } = this.state;
-    if (Object.keys(results).length && results.length) {
-      return (
-        <div className="results">
-          {results.map((result) => {
-            return (
-              <a key={result.id} href="/" className="card-product">
-                {result.title}
-              </a>
-            );
-          })}
-        </div>
-      );
+  setListenerSearch() {
+    const inputSearch = document.getElementById("search-input");
+    if (inputSearch) {
+      inputSearch.addEventListener("keyup", function (event) {
+        if (event.keyCode === 13) {
+          event.preventDefault();
+          document
+            .querySelector(".container-search-bar__search-button")
+            .click();
+        }
+      });
     }
-  };
+  }
+
+  setProducts(listProducts) {
+    const resultsFiltered = [];
+    for (let i = 0; i < 4; i++) {
+      if (listProducts[i]) {
+        resultsFiltered[i] = listProducts[i];
+      }
+    }
+    this.setState({ results: resultsFiltered });
+    console.dir(this.state);
+  }
 
   render() {
-    const { query } = this.state;
+    const { query, results } = this.state;
+    console.dir(results);
     return (
-      <div className="container-search">
-        <label
-          className="container-search__search-label"
-          htmlFor="search-input"
-        >
-          <input
-            type="text"
-            name="query"
-            value={query}
-            id="search-input"
-            placeholder="Nunca dejes de buscar"
-            onChange={this.searchInputChange}
-          />
-        </label>
-        {this.showResults()}
+      <div className="App">
+        <header className="App-header">
+          <div className="App-header__header-container">
+            <img
+              src={logoML}
+              className="App-header__logo"
+              alt="logo mercadolibre"
+            />
+            <SearchChild
+              searchQuery={query}
+              onChangeFunction={this.searchInputChange}
+              searchFunction={this.fetchSearchQuery}
+            />
+          </div>
+        </header>
+        <section className="container-search">
+          <ListProducts products={results} />
+        </section>
       </div>
     );
   }
