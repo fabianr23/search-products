@@ -1,4 +1,5 @@
 import React from "react";
+import CardProduct from "./card-product";
 
 export default function ListProducts(products) {
   const productsList = products.products;
@@ -8,13 +9,8 @@ export default function ListProducts(products) {
     return (
       <div className="results">
         {productsList.map((product) => {
-          return (
-            <div key={product.id}>
-              <a href="/" className="card-product">
-                {product.title}
-              </a>
-            </div>
-          );
+          console.dir(product);
+          return <CardProduct product={product} key={product.id} />;
         })}
       </div>
     );

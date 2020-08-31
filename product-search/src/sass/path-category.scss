@@ -1,0 +1,27 @@
+.container-path {
+  &__path-list {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 1em 10%;
+    background: #eeeeee;
+  }
+  &__path-item {
+    position: relative;
+    margin-right: 25px;
+    font-size: 14px;
+    color: #999999;
+    &:after {
+      content: ">";
+      position: absolute;
+      font-size: 21px;
+      right: -19px;
+      top: -7px;
+    }
+    &:last-of-type {
+      &:after {
+        content: "";
+      }
+    }
+  }
+}

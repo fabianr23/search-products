@@ -10,7 +10,7 @@ export default async function getSearchEndpoint(query) {
         ? ""
         : "No results found, try with another search please.";
     return {
-      response: response.data.results,
+      response: response.data,
       message: msgResult,
     };
   } catch (error) {

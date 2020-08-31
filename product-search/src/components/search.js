@@ -2,7 +2,8 @@ import React from "react";
 import "../sass/search.scss";
 import getSearchEndpoint from "./search-endpoint";
 import ListProducts from "./list-products";
-import SearchChild from "./search-bar";
+import SearchBar from "./search-bar";
+import PathCategory from "./path-category";
 import logoML from "../assets/png/logo-ML.png";
 class Search extends React.Component {
   constructor(props) {
@@ -12,6 +13,7 @@ class Search extends React.Component {
       query: "",
       results: [],
       message: "",
+      path: [],
     };
   }
 
@@ -24,7 +26,10 @@ class Search extends React.Component {
 
     if (query.length >= 3) {
       const { response, message } = await getSearchEndpoint(query);
-      await this.setProducts(response);
+      await this.setProducts(response.results);
+      await this.setPathCategory(
+        response.filters[0]?.values[0]?.path_from_root
+      );
       this.setState({
         message: message,
       });
@@ -69,9 +74,20 @@ class Search extends React.Component {
     console.dir(this.state);
   }
 
+  setPathCategory(path) {
+    const arrayPath = [];
+    if (path) {
+      path.forEach((path) => {
+        if (path.name) {
+          arrayPath.push(path.name);
+        }
+      });
+    }
+    this.setState({ path: arrayPath });
+  }
+
   render() {
-    const { query, results } = this.state;
-    console.dir(results);
+    const { query, results, path } = this.state;
     return (
       <div className="App">
         <header className="App-header">
@@ -81,13 +97,16 @@ class Search extends React.Component {
               className="App-header__logo"
               alt="logo mercadolibre"
             />
-            <SearchChild
+            <SearchBar
               searchQuery={query}
               onChangeFunction={this.searchInputChange}
               searchFunction={this.fetchSearchQuery}
             />
           </div>
         </header>
+        <section className="path-category">
+          <PathCategory path={path} />
+        </section>
         <section className="container-search">
           <ListProducts products={results} />
         </section>
