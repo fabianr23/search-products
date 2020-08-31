@@ -2,4 +2,8 @@
   width: 80%;
   margin: 0 10%;
   background: #fff;
+  @media (max-width: 768px) {
+    width: calc(100% - 30px);
+    margin: 0 15px;
+  }
 }

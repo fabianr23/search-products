@@ -5,6 +5,9 @@
     margin: 0;
     padding: 1em 10%;
     background: #eeeeee;
+    @media (max-width: 768px) {
+      padding: 1em 15px;
+    }
   }
   &__path-item {
     position: relative;

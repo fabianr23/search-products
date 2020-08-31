@@ -2,8 +2,8 @@ import React from "react";
 import iconShipping from "../assets/png/icon-shipping.png";
 import "../sass/card-product.scss";
 
-export default function CardProduct(productObject) {
-  const product = productObject.product;
+export default function CardProduct(props) {
+  const { product } = props;
   return (
     <section className="card-product">
       <div className="card-product__product-info">

@@ -1,9 +1,12 @@
 import React from "react";
 import "../sass/search.scss";
 import getSearchEndpoint from "./search-endpoint";
+import getItemsEndpoint from "./items-endpoint";
+import getItemsDescriptionEndpoint from "./items-description-endpoint";
 import ListProducts from "./list-products";
 import SearchBar from "./search-bar";
 import PathCategory from "./path-category";
+import SingleProduct from "./product-description";
 import logoML from "../assets/png/logo-ML.png";
 class Search extends React.Component {
   constructor(props) {
@@ -14,6 +17,7 @@ class Search extends React.Component {
       results: [],
       message: "",
       path: [],
+      selectedProduct: null,
     };
   }
 
@@ -70,7 +74,7 @@ class Search extends React.Component {
         resultsFiltered[i] = listProducts[i];
       }
     }
-    this.setState({ results: resultsFiltered });
+    this.setState({ results: resultsFiltered, selectedProduct: null });
     console.dir(this.state);
   }
 
@@ -86,8 +90,25 @@ class Search extends React.Component {
     this.setState({ path: arrayPath });
   }
 
+  setSingleProduct = async (event) => {
+    const productID = event?.currentTarget?.dataset?.id;
+    const { response, error } = await getItemsEndpoint(productID);
+    const {
+      responseDescription,
+      errorDescription,
+    } = await getItemsDescriptionEndpoint(productID);
+
+    if (response && !error) {
+      const productComplete = { ...response };
+      if (responseDescription && !errorDescription) {
+        productComplete.description_plain_text = responseDescription.plain_text;
+      }
+      this.setState({ selectedProduct: productComplete });
+    }
+  };
+
   render() {
-    const { query, results, path } = this.state;
+    const { query, results, path, selectedProduct } = this.state;
     return (
       <div className="App">
         <header className="App-header">
@@ -107,9 +128,20 @@ class Search extends React.Component {
         <section className="path-category">
           <PathCategory path={path} />
         </section>
-        <section className="container-search">
-          <ListProducts products={results} />
-        </section>
+        {!this.state.selectedProduct && (
+          <section className="container-search">
+            <ListProducts
+              products={results}
+              selectProduct={this.setSingleProduct}
+            />
+          </section>
+        )}
+
+        {this.state.selectedProduct && (
+          <section className="single-product">
+            <SingleProduct product={selectedProduct} />
+          </section>
+        )}
       </div>
     );
   }

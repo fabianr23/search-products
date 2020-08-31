@@ -9,8 +9,12 @@ export default function PathCategory(pathCategory) {
     return (
       <div className="container-path">
         <ul className="container-path__path-list">
-          {path.map((category) => {
-            return <li className="container-path__path-item"> {category} </li>;
+          {path.map((category, index) => {
+            return (
+              <li className="container-path__path-item" key={index}>
+                {category}
+              </li>
+            );
           })}
         </ul>
       </div>

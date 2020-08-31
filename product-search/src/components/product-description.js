@@ -1,24 +1,30 @@
 import React from "react";
 import "../sass/product-description.scss";
 
-export default function CardProduct(productObject) {
-  const product = productObject.product;
+export default function singleProduct(props) {
+  const { product } = props;
+  console.dir(props);
+  if (!Object.keys(product).length) {
+    return null;
+  }
   return (
-    <section className="product-description">
-      <div className="product-description__product-info">
-        <figure className="product-description__image">
-          <img src={product.thumbnail} alt={product.title} />
+    <section className="container-product">
+      <div className="container-product__product-info">
+        <figure className="container-product__image">
+          <img src={product.pictures[0]?.secure_url} alt={product.title} />
         </figure>
-        <article className="product-description__description">
-          <h2>Descripcion</h2>
-          <p>{product.title}</p>
+        <article className="container-product__description">
+          <h2>Descripcion del producto</h2>
+          <p>{product.description_plain_text}</p>
         </article>
       </div>
-      <div className="product-description__properties">
-        <span>Nuevo - 234 vendidos</span>
+      <div className="container-product__properties">
+        <span className="product-properties__subtitle">
+          {product.condition} - {product.sold_quantity} vendidos
+        </span>
         <h2>{product?.title}</h2>
-        <span>$ 1982</span>
-        <button className="button-buy">Comprar</button>
+        <span className="product-properties__price">$ {product.price}</span>
+        <button className="product-properties__button-buy">Comprar</button>
       </div>
     </section>
   );
