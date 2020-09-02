@@ -14,69 +14,43 @@ class Search extends React.Component {
 
     this.state = {
       query: "",
-      results: [],
-      message: "",
       path: [],
       selectedProduct: null,
+      renderProductsOnSearch: false,
     };
-  }
-
-  componentDidMount() {
-    this.setListenerSearch();
   }
 
   fetchSearchQuery = async () => {
     let query = this.state.query;
 
     if (query.length >= 3) {
-      const { response, message } = await getSearchEndpoint(query);
-      await this.setProducts(response.results);
+      const { response } = await getSearchEndpoint(query);
       await this.setPathCategory(
         response.filters[0]?.values[0]?.path_from_root
       );
       this.setState({
-        message: message,
+        selectedProduct: null,
+        renderProductsOnSearch: true,
       });
     } else {
       this.setState({
-        results: [],
+        selectedProduct: null,
+        renderProductsOnSearch: false,
       });
     }
   };
 
-  searchInputChange = async (event) => {
-    const query = event.target.value;
+  searchInputChange = (event) => {
+    const query = event?.target?.value;
     if (query) {
-      await this.setState({ query: query, message: "" });
+      this.setState({
+        query,
+        renderProductsOnSearch: false,
+      });
     } else {
-      this.setState({ query, results: [], message: "" });
+      this.setState({ query, results: [] });
     }
   };
-
-  setListenerSearch() {
-    const inputSearch = document.getElementById("search-input");
-    if (inputSearch) {
-      inputSearch.addEventListener("keyup", function (event) {
-        if (event.keyCode === 13) {
-          event.preventDefault();
-          document
-            .querySelector(".container-search-bar__search-button")
-            .click();
-        }
-      });
-    }
-  }
-
-  setProducts(listProducts) {
-    const resultsFiltered = [];
-    for (let i = 0; i < 4; i++) {
-      if (listProducts[i]) {
-        resultsFiltered[i] = listProducts[i];
-      }
-    }
-    this.setState({ results: resultsFiltered, selectedProduct: null });
-    console.dir(this.state);
-  }
 
   setPathCategory(path) {
     const arrayPath = [];
@@ -101,14 +75,14 @@ class Search extends React.Component {
     if (response && !error) {
       const productComplete = { ...response };
       if (responseDescription && !errorDescription) {
-        productComplete.description_plain_text = responseDescription.plain_text;
+        productComplete.item.description = responseDescription.description;
       }
       this.setState({ selectedProduct: productComplete });
     }
   };
 
   render() {
-    const { query, results, path, selectedProduct } = this.state;
+    const { query, path, selectedProduct, renderProductsOnSearch } = this.state;
     return (
       <div className="App">
         <header className="App-header">
@@ -131,8 +105,9 @@ class Search extends React.Component {
         {!this.state.selectedProduct && (
           <section className="container-search">
             <ListProducts
-              products={results}
+              query={query}
               selectProduct={this.setSingleProduct}
+              render={renderProductsOnSearch}
             />
           </section>
         )}

@@ -5,8 +5,9 @@ export default async function getItemsDescriptionEndpoint(id) {
 
   try {
     let response = await axios.get(itemsDescriptionAPIURl);
+    const data = transformResponse(response.data);
     return {
-      responseDescription: response.data,
+      responseDescription: data,
       errorDescription: null,
     };
   } catch (error) {
@@ -15,4 +16,11 @@ export default async function getItemsDescriptionEndpoint(id) {
       errorDescription: error,
     };
   }
+}
+
+function transformResponse(data) {
+  let dataTransformed = {
+    description: data.plain_text,
+  };
+  return dataTransformed;
 }
